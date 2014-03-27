@@ -31,7 +31,18 @@ GEM
       tzinfo (~> 0.3.37)
     arel (4.0.2)
     atomic (1.1.16)
+    better_errors (1.1.0)
+      coderay (>= 1.0.0)
+      erubis (>= 2.6.6)
+    binding_of_caller (0.7.2)
+      debug_inspector (>= 0.0.1)
     builder (3.1.4)
+    cached_resource (3.0.0)
+      activeresource (>= 3.2)
+      activesupport (>= 3.2)
+      nilio (>= 1.0)
+      rake
+    coderay (1.1.0)
     coffee-rails (4.0.1)
       coffee-script (>= 2.2.0)
       railties (>= 4.0.0, < 5.0)
@@ -39,6 +50,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.7.0)
+    debug_inspector (0.0.2)
     dotenv (0.10.0)
     dotenv-rails (0.10.0)
       dotenv (= 0.10.0)
@@ -66,6 +78,7 @@ GEM
     multi_json (1.9.2)
     multi_xml (0.5.5)
     multipart-post (2.0.0)
+    nilio (1.0.0)
     oauth2 (0.9.3)
       faraday (>= 0.8, < 0.10)
       jwt (~> 0.1.8)
@@ -144,6 +157,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  better_errors
+  binding_of_caller
+  cached_resource
   coffee-rails (~> 4.0.0)
   dotenv-rails
   jbuilder (~> 1.2)
