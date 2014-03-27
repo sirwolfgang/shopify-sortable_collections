@@ -46,3 +46,4 @@ end
 
 gem 'dotenv-rails'
 gem 'omniauth-shopify-oauth2'
+gem 'shopify_api'

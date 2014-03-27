@@ -15,4 +15,13 @@ class Shop < ActiveRecord::Base
     shop
   end
   
+  def api
+    ShopifyAPI::Session.temp(self.uid, self.token) { ShopifyAPI::Shop.current }
+  end
+  
+  def method_missing(method, *args)
+    return api.attributes[method] if api.attributes.include?(method)
+    super
+  end
+  
 end
