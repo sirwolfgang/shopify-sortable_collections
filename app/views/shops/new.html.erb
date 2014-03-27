@@ -1,5 +1,13 @@
 <h1>New shop</h1>
 
-<%= render 'form' %>
+<form role="form" action="<%= omniauth_shopify_path %>" method="get">
+  <div class="input-group">
+    <input type="text" class="form-control" name="shop">
+    <span class="input-group-btn">
+      <input class="btn btn-default" type="submit" value="Install">
+    </span>
+  </div>
+</form>
 
 <%= link_to 'Back', shops_path %>
+
