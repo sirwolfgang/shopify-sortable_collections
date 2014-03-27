@@ -1,0 +1,14 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Token:</strong>
+  <%= @shop.token %>
+</p>
+
+<p>
+  <strong>Uid:</strong>
+  <%= @shop.uid %>
+</p>
+
+<%= link_to 'Edit', edit_shop_path(@shop) %> |
+<%= link_to 'Back', shops_path %>
