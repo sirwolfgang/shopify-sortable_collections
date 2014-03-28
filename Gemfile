@@ -45,3 +45,11 @@ end
 # gem 'debugger', group: [:development, :test]
 
 gem 'dotenv-rails'
+gem 'omniauth-shopify-oauth2'
+gem 'shopify_api'
+gem 'cached_resource'
+
+group :development do
+  gem "better_errors"
+  gem "binding_of_caller"
+end

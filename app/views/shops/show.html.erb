@@ -1,0 +1,19 @@
+<div class="page-header">
+  <h1><%= @shop.name %> <small><%= @shop.uid %></small></h1>
+</div>
+
+<table class="table table-condensed table-striped">
+  <thead>
+    <tr>
+      <th>Name</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @shop.smart_collections.each do |collection| %>
+      <tr>
+        <td><%= collection.attributes[:title] %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

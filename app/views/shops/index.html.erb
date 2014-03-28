@@ -1,0 +1,22 @@
+<div class="page-header">
+  <h1>Listing Shops</h1>
+</div>
+
+<table class="table table-condensed table-striped">
+  <thead>
+    <tr>
+      <th>Name</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @shops.each do |shop| %>
+      <tr>
+        <td><%= link_to shop.name, shop %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+
+<%= link_to 'New Shop', new_shop_path %>
