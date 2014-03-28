@@ -5,13 +5,15 @@
 <table class="table table-condensed table-striped">
   <thead>
     <tr>
-      <th></th>
+      <th>Name</th>
     </tr>
   </thead>
 
   <tbody>
+    <% @shop.smart_collections.each do |collection| %>
       <tr>
-        <td></td>
+        <td><%= collection.attributes[:title] %></td>
       </tr>
+    <% end %>
   </tbody>
 </table>
