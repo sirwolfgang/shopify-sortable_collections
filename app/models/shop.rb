@@ -15,24 +15,22 @@ class Shop < ActiveRecord::Base
     shop
   end
   
-  def method_missing(method, *args)
-    shop = self.api { ShopifyAPI::Shop.current }
-    return shop.attributes[method] if shop.attributes.include?(method)
-    super
-  end
-  
   def smart_collections
     self.api { ShopifyAPI::SmartCollection.all }
   end
   
-  
-protected
   def api(&block)
     output = nil
     ShopifyAPI::Session.temp(self.uid, self.token) do 
       output = yield unless block.nil?
     end
     return output
+  end
+  
+  def method_missing(method, *args)
+    shop = self.api { ShopifyAPI::Shop.current }
+    return shop.attributes[method] if shop.attributes.include?(method)
+    super
   end
   
 end
