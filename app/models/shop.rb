@@ -40,7 +40,7 @@ class Shop < ActiveRecord::Base
   
   def register_webhooks
     self.api do
-      ShopifyAPI::Webhook.create(topic: 'shop/update', address: webhooks_app_uninstalled_url, format: 'json')
+      ShopifyAPI::Webhook.create(topic: 'shop/update', address: webhooks_shop_update_url, format: 'json')
       ShopifyAPI::Webhook.create(topic: 'app/uninstalled', address: webhooks_app_uninstalled_url, format: 'json')
 
       ShopifyAPI::Webhook.create(topic: 'products/create', address: webhooks_products_create_url, format: 'json')
