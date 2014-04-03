@@ -21,9 +21,5 @@ module Workspace
     # config.i18n.default_locale = :de
     
     default_url_options[:host] = ENV['HOST_URL']
-    
-    class ActiveResource::Base
-      cached_resource :collection_synchronize => true
-    end
   end
 end

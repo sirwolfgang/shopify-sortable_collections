@@ -30,14 +30,6 @@ class Shop < ActiveRecord::Base
     return output
   end
   
-  def method_missing(method, *args)
-    unless self.new_record?
-      shop = self.api { ShopifyAPI::Shop.current }
-      return shop.attributes[method] if shop.attributes.include?(method)
-    end
-    super
-  end
-  
   def register_webhooks
     self.api do
       ShopifyAPI::Webhook.create(topic: 'shop/update', address: webhooks_shop_update_url, format: 'json')
@@ -51,5 +43,13 @@ class Shop < ActiveRecord::Base
       ShopifyAPI::Webhook.create(topic: 'collections/update', address: webhooks_collections_update_url, format: 'json')
       ShopifyAPI::Webhook.create(topic: 'collections/delete', address: webhooks_collections_delete_url, format: 'json')
     end
+  end
+  
+  def method_missing(method, *args)
+    unless self.new_record?
+      shop = self.api { ShopifyAPI::Shop.current }
+      return shop.attributes[method] if shop.attributes.include?(method)
+    end
+    super
   end
 end

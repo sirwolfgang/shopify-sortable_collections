@@ -2,7 +2,7 @@ Workspace::Application.routes.draw do
   
   post "webhooks/app_uninstalled"
   post "webhooks/shop_update"
-  post "webhoks/prodoucts_create"
+  post "webhooks/products_create"
   post "webhooks/products_update"
   post "webhooks/products_delete"
   post "webhooks/collections_create"
