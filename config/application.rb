@@ -20,8 +20,6 @@ module Workspace
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
     
-    class ActiveResource::Base
-      cached_resource :collection_synchronize => true
-    end
+    default_url_options[:host] = ENV['HOST_URL']
   end
 end
