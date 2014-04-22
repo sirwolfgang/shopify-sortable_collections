@@ -20,31 +20,49 @@ class WebhooksController < ApplicationController
 
   def products_create
     head :no_content if params['webhook'].nil? 
+    
+    logger.info params['webhook']
+    
     head :accepted
   end
 
   def products_update
     head :no_content if params['webhook'].nil? 
+    
+    logger.info params['webhook']
+    
     head :accepted
   end
 
   def products_delete
     head :no_content if params['webhook'].nil? 
+    
+    logger.info params['webhook']
+    
     head :accepted
   end
 
   def collections_create
     head :no_content if params['webhook'].nil? 
+    
+    logger.info params['webhook']
+    
     head :accepted
   end
 
   def collections_update
     head :no_content if params['webhook'].nil? 
+    
+    logger.info params['webhook']
+    
     head :accepted
   end
 
   def collections_delete
     head :no_content if params['webhook'].nil? 
+    
+    logger.info params['webhook']
+    
     head :accepted
   end
 end
