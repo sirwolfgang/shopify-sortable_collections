@@ -1,4 +1,5 @@
 class Shop < ActiveRecord::Base
+  delegate :smart_collections, :custom_collections, to: :collections
   include Rails.application.routes.url_helpers
   
   def self.create_with_omniauth(auth)
@@ -23,9 +24,8 @@ class Shop < ActiveRecord::Base
   end
   
   def api(&block)
-    output = nil
     ShopifyAPI::Session.temp(self.uid, self.token) do 
-      output = yield unless block.nil?
+      output = yield
     end
     return output
   end

@@ -1,0 +1,2 @@
+class CustomCollection < Collection
+end
