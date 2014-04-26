@@ -1,5 +1,7 @@
 Workspace::Application.routes.draw do
   
+  resources :collections
+
   post "webhooks/app_uninstalled"
   post "webhooks/shop_update"
   post "webhooks/products_create"
