@@ -37,16 +37,16 @@ class Shop < ActiveRecord::Base
   
   def register_webhooks
     self.api do
-      ShopifyAPI::Webhook.create(topic: 'shop/update', address: webhooks_shop_update_url, format: 'json')
-      ShopifyAPI::Webhook.create(topic: 'app/uninstalled', address: webhooks_app_uninstalled_url, format: 'json')
+      ShopifyAPI::Webhook.create(topic: 'shop/update', address: shop_webhooks_shop_update_url(self.id), format: 'json')
+      ShopifyAPI::Webhook.create(topic: 'app/uninstalled', address: shop_webhooks_app_uninstalled_url(self.id), format: 'json')
 
-      ShopifyAPI::Webhook.create(topic: 'products/create', address: webhooks_products_create_url, format: 'json')
-      ShopifyAPI::Webhook.create(topic: 'products/update', address: webhooks_products_update_url, format: 'json')
-      ShopifyAPI::Webhook.create(topic: 'products/delete', address: webhooks_products_delete_url, format: 'json')
+      ShopifyAPI::Webhook.create(topic: 'products/create', address: shop_webhooks_products_create_url(self.id), format: 'json')
+      ShopifyAPI::Webhook.create(topic: 'products/update', address: shop_webhooks_products_update_url(self.id), format: 'json')
+      ShopifyAPI::Webhook.create(topic: 'products/delete', address: shop_webhooks_products_delete_url(self.id), format: 'json')
 
-      ShopifyAPI::Webhook.create(topic: 'collections/create', address: webhooks_collections_create_url, format: 'json')
-      ShopifyAPI::Webhook.create(topic: 'collections/update', address: webhooks_collections_update_url, format: 'json')
-      ShopifyAPI::Webhook.create(topic: 'collections/delete', address: webhooks_collections_delete_url, format: 'json')
+      ShopifyAPI::Webhook.create(topic: 'collections/create', address: shop_webhooks_collections_create_url(self.id), format: 'json')
+      ShopifyAPI::Webhook.create(topic: 'collections/update', address: shop_webhooks_collections_update_url(self.id), format: 'json')
+      ShopifyAPI::Webhook.create(topic: 'collections/delete', address: shop_webhooks_collections_delete_url(self.id), format: 'json')
     end
   end
   
