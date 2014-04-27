@@ -1,4 +1,5 @@
 class Shop < ActiveRecord::Base
+  has_many :collections
   delegate :smart_collections, :custom_collections, to: :collections
   include Rails.application.routes.url_helpers
   
@@ -18,16 +19,20 @@ class Shop < ActiveRecord::Base
     shop.update(token: auth["credentials"]["token"]) unless shop.token == auth["credentials"]["token"]
     shop
   end
-  
-  def smart_collections
-    self.api { ShopifyAPI::SmartCollection.all }
-  end
-  
+
   def api(&block)
+    output = nil
     ShopifyAPI::Session.temp(self.uid, self.token) do 
       output = yield
     end
     return output
+  end
+  
+  def shopify_collections
+    collections = Array.new
+    collections += self.api { ShopifyAPI::SmartCollection.all }
+    collections += self.api { ShopifyAPI::CustomCollection.all }
+    collections.sort { |x,y| x.attributes[:title] <=> y.attributes[:title] }
   end
   
   def register_webhooks

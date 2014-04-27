@@ -11,10 +11,10 @@
   </thead>
 
   <tbody>
-    <% @shop.smart_collections.each do |collection| %>
+    <% @shop.shopify_collections.each do |collection| %>
       <tr>
         <td><%= collection.attributes[:title] %></td>
-        <td><%= button_to_create_collection collection.attributes[:id], :smart unless Collection.find_by_shopify_id(collection.attributes[:id]).present? %></td>
+        <td></td>
       </tr>
     <% end %>
   </tbody>
