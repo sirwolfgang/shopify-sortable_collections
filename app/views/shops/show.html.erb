@@ -11,12 +11,12 @@
   </thead>
 
   <tbody>
-    <% @shop.shopify_collections.each do |collection| %>
+    <% @shop.collections.each do |collection| %>
       <tr>
-        <td><%= collection.attributes[:title] %></td>
+        <td><%= collection.title %></td>
         <td>
-          <% if Collection.find_by_id(collection.attributes[:id]).nil? %>
-            <%= render 'collections/form_create',  { collection: Collection.new_from_shopify(@shop, collection) } %>
+          <% if collection.new_record? %>
+            <%= render 'collections/form_create',  { collection: collection } %>
           <% end %>
         </td>
       </tr>

@@ -1,5 +1,4 @@
 class Shop < ActiveRecord::Base
-  has_many :collections
   delegate :smart_collections, :custom_collections, to: :collections
   include Rails.application.routes.url_helpers
   
@@ -33,6 +32,24 @@ class Shop < ActiveRecord::Base
     collections += self.api { ShopifyAPI::SmartCollection.all }
     collections += self.api { ShopifyAPI::CustomCollection.all }
     collections.sort { |x,y| x.attributes[:title] <=> y.attributes[:title] }
+  end
+  
+  def collections
+    collections = Array.new
+    shopify_collections.each do |collection| 
+      record =   Collection.find_by(shop_id: self.id, id: collection.attributes[:id])
+      record ||= Collection.new_from_shopify(self, collection)
+      
+      collections.push(record)
+    end
+    collections
+  end
+  
+  def collections_list
+    shopify_collections.each do |collection| 
+      record = Collection.find_by_id(collection.attributes[:id])
+      collection = record unless record.nil?
+    end
   end
   
   def register_webhooks
