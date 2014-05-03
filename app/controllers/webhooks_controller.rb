@@ -43,6 +43,7 @@ class WebhooksController < ApplicationController
   end
 
   def collections_update
+    # TODO:: Debug not being triggered
     @shop.reload_shopify_smart_collections
     @shop.reload_shopify_custom_collections
     

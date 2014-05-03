@@ -66,7 +66,7 @@ class Shop < ActiveRecord::Base
       collections << new_collection
     end
     
-    collections.sort { |x,y| x.title <=> y.title }
+    collections
   end
   
   def register_webhooks

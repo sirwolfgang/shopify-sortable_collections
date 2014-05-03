@@ -9,31 +9,21 @@ class Collection < ActiveRecord::Base
   
   validates :shop_id, presence: true
   
-  before_create :create_with_api
-  before_update :save_with_api
+  before_save :save_with_api
   
   def shopify
-    @shopify ||= load_from_api
+    raise "Type not specified!"
   end
   
-  def load_from_api
-    false
-  end
-  
-  def create_with_api
-    save_with_api
-    self.id = @shopify.id
-    self.id.present?
+  def reload_shopify
+    raise "Type not specified!"
   end
   
   def save_with_api
     ## TODO:: Optimize with Dirty Check, Note: ActiveResource/ActiveModel 4.0.0 does not support Dirty
-    shop.api { shopify.save }
-    reload_shopify
-  end
-  
-  def reload_shopify
-    false
+    self.shop.api { shopify.save }
+    self.id = shopify.id
+    reload_shopify.present?
   end
   
   def copy_shopify_attributes(collection)
@@ -41,7 +31,7 @@ class Collection < ActiveRecord::Base
   end
   
   def method_missing(method, *args)
-    unless self.shop.nil?
+    unless self.shop.nil? or self.shopify.nil?
       return shopify.attributes[method] if shopify.attributes.include?(method)
     end
     super

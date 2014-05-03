@@ -15,11 +15,10 @@
       <tr>
         <td><%= collection.title %></td>
         <td>
-          <% if collection.new_record? %>
             <%= render 'collections/form_create',  { collection: collection } %>
-          <% end %>
         </td>
       </tr>
     <% end %>
+    
   </tbody>
 </table>
