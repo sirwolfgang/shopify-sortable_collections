@@ -36,19 +36,22 @@ class WebhooksController < ApplicationController
   end
 
   def collections_create
-    @shop.reload_shopify
+    @shop.reload_shopify_smart_collections
+    @shop.reload_shopify_custom_collections
     
     head :accepted
   end
 
   def collections_update
-    @shop.reload_shopify
+    @shop.reload_shopify_smart_collections
+    @shop.reload_shopify_custom_collections
     
     head :accepted
   end
 
   def collections_delete
-    @shop.reload_shopify
+    @shop.reload_shopify_smart_collections
+    @shop.reload_shopify_custom_collections
     
     head :accepted
   end

@@ -20,17 +20,29 @@ class Shop < ActiveRecord::Base
   end
   
   def shopify
-    @shopify ||= load_from_api
+    @shopify ||= self.api { ShopifyAPI::Shop.find(:one, from: "/admin/shop.json", uid: self.uid) }
   end
   
-  def load_from_api
-    self.api do
-      if self.uid.present? && self.token.present?
-        ShopifyAPI::Shop.find(:one, from: "/admin/shop.json", uid: self.uid) 
-      end
-    end
+  def shopify_smart_collections
+    @shopify_smart_collections ||= ShopifyAPI::SmartCollection.find(:all, uid: self.uid)
   end
-
+  
+  def shopify_custom_collections
+    @shopify_custom_collections ||= ShopifyAPI::CustomCollection.find(:all, uid: self.uid)
+  end
+  
+  def reload_shopify
+    @shopify = self.api { ShopifyAPI::Shop.find(:one, from: "/admin/shop.json", uid: self.uid, reload: true) }
+  end
+  
+  def reload_shopify_smart_collections
+    @shopify_smart_collections = ShopifyAPI::SmartCollection.find(:all, uid: self.uid, reload: true)
+  end
+  
+  def reload_shopify_custom_collections
+    @shopify_custom_collections = ShopifyAPI::CustomCollection.find(:all, uid: self.uid, reload: true)
+  end
+  
   def api(&block)
     output = nil
     ShopifyAPI::Session.temp(self.uid, self.token) do 
@@ -39,30 +51,19 @@ class Shop < ActiveRecord::Base
     return output
   end
   
-  def reload_shopify
-    logger.info @shopify
-    self.api do
-      ShopifyAPI::Shop.find(:one, from: "/admin/shop.json", uid: self.uid, reload: true) 
-      ShopifyAPI::SmartCollection.find(:all, uid: self.uid, reload: true)
-      ShopifyAPI::CustomCollection.find(:all, uid: self.uid, reload: true)
-    end
-    logger.info @shopify
-  end
-  
   def collections
     collections = Array.new
-    self.api do
-      ShopifyAPI::SmartCollection.find(:all, uid: self.uid).each do |shopify_collection|
-        new_collection   = SmartCollection.find_by(shop_id: self.id, id: shopify_collection.id)
-        new_collection ||= SmartCollection.new(shop_id: self.id, id: shopify_collection.id)
-        collections << new_collection
-      end
+    
+    shopify_smart_collections.each do |shopify_collection|
+      new_collection   = SmartCollection.find_by(shop_id: self.id, id: shopify_collection.id)
+      new_collection ||= SmartCollection.new(shop_id: self.id, id: shopify_collection.id)
+      collections << new_collection
+    end
 
-      ShopifyAPI::CustomCollection.find(:all, uid: self.uid).each do |shopify_collection|
-        new_collection   = CustomCollection.find_by(shop_id: self.id, id: shopify_collection.id)
-        new_collection ||= CustomCollection.new(shop_id: self.id, id: shopify_collection.id)
-        collections << new_collection
-      end
+    shopify_custom_collections.each do |shopify_collection|
+      new_collection   = CustomCollection.find_by(shop_id: self.id, id: shopify_collection.id)
+      new_collection ||= CustomCollection.new(shop_id: self.id, id: shopify_collection.id)
+      collections << new_collection
     end
     
     collections.sort { |x,y| x.title <=> y.title }
