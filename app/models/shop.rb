@@ -27,39 +27,28 @@ class Shop < ActiveRecord::Base
     return output
   end
   
-  def shopify_collections
-    collections = Array.new
-    collections += self.api { ShopifyAPI::SmartCollection.all }
-    collections += self.api { ShopifyAPI::CustomCollection.all }
-    collections.sort { |x,y| x.attributes[:title] <=> y.attributes[:title] }
-  end
-  
   def collections
     collections = Array.new
-    shopify_collections.each do |collection| 
-      record =   Collection.find_by(shop_id: self.id, id: collection.attributes[:id])
-      record ||= Collection.new_from_shopify(self, collection)
-      
-      collections.push(record)
+    
+    ShopifyAPI::SmartCollection.all.each do |shopify_collection|
+      new_collection   = SmartCollection.find_by(shop_id: self.id, id: shopify_collection.id)
+      new_collection ||= SmartCollection.new(shop_id: self.id, id: shopify_collection.id)
+      collections << new_collection
     end
-    collections
-  end
-  
-  def collections_list
-    shopify_collections.each do |collection| 
-      record = Collection.find_by_id(collection.attributes[:id])
-      collection = record unless record.nil?
+    
+    ShopifyAPI::CustomCollection.all.each do |shopify_collection|
+      new_collection   = CustomCollection.find_by(shop_id: self.id, id: shopify_collection.id)
+      new_collection ||= CustomCollection.new(shop_id: self.id, id: shopify_collection.id)
+      collections << new_collection
     end
+    
+    collections.sort { |x,y| x.title <=> y.title }
   end
   
   def register_webhooks
     self.api do
       ShopifyAPI::Webhook.create(topic: 'shop/update', address: shop_webhooks_shop_update_url(self.id), format: 'json')
       ShopifyAPI::Webhook.create(topic: 'app/uninstalled', address: shop_webhooks_app_uninstalled_url(self.id), format: 'json')
-
-      ShopifyAPI::Webhook.create(topic: 'products/create', address: shop_webhooks_products_create_url(self.id), format: 'json')
-      ShopifyAPI::Webhook.create(topic: 'products/update', address: shop_webhooks_products_update_url(self.id), format: 'json')
-      ShopifyAPI::Webhook.create(topic: 'products/delete', address: shop_webhooks_products_delete_url(self.id), format: 'json')
 
       ShopifyAPI::Webhook.create(topic: 'collections/create', address: shop_webhooks_collections_create_url(self.id), format: 'json')
       ShopifyAPI::Webhook.create(topic: 'collections/update', address: shop_webhooks_collections_update_url(self.id), format: 'json')
