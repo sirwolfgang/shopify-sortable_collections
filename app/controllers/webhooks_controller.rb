@@ -4,16 +4,15 @@ class WebhooksController < ApplicationController
   skip_before_action :verify_authenticity_token
   
   def app_uninstalled
-    # TODO:: Validate with @shop
-    Shop.find_by_uid(params['webhook']['myshopify_domain']).destroy
-    
+    # TODO:: Validate with params
+    @shop.destroy
+
     head :accepted
   end
 
   def shop_update
-    # TODO:: Validate with @shop
-    shop = Shop.find_by_uid(params['webhook']['myshopify_domain'])
-    shop.api{ ShopifyAPI::Shop.find(:one, :from => "/admin/shop.json", reload: true) }
+    # TODO:: Validate with params
+    @shop.reload_shopify
     
     head :accepted
   end
@@ -37,28 +36,19 @@ class WebhooksController < ApplicationController
   end
 
   def collections_create
-    @shop.api do
-      ShopifyAPI::SmartCollection.find(:all, reload: true)
-      ShopifyAPI::CustomCollection.find(:all, reload: true)
-    end
+    @shop.reload_shopify
     
     head :accepted
   end
 
   def collections_update
-    @shop.api do
-      ShopifyAPI::SmartCollection.find(:all, reload: true)
-      ShopifyAPI::CustomCollection.find(:all, reload: true)
-    end
+    @shop.reload_shopify
     
     head :accepted
   end
 
   def collections_delete
-    @shop.api do
-      ShopifyAPI::SmartCollection.find(:all, reload: true)
-      ShopifyAPI::CustomCollection.find(:all, reload: true)
-    end
+    @shop.reload_shopify
     
     head :accepted
   end

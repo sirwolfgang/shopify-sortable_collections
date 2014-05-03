@@ -1,20 +1,21 @@
 class Collection < ActiveRecord::Base
   
-  attr_accessor :shopify
-  
   belongs_to :shop
   belongs_to :parent, class_name: "Collection"
   has_many :children, class_name: "Collection", foreign_key: :parent_id
   
   scope :smart_collections,  -> { where(type: 'SmartCollection') }
-  scope :custom_collections, -> { where(race: 'CustomCollection') }
+  scope :custom_collections, -> { where(type: 'CustomCollection') }
   
   validates :shop_id, presence: true
   
-  after_initialize :load_from_api
   before_create :create_with_api
   before_update :save_with_api
-
+  
+  def shopify
+    @shopify ||= load_from_api
+  end
+  
   def load_from_api
     false
   end
@@ -26,16 +27,22 @@ class Collection < ActiveRecord::Base
   end
   
   def save_with_api
+    ## TODO:: Optimize with Dirty Check, Note: ActiveResource/ActiveModel 4.0.0 does not support Dirty
+    shop.api { shopify.save }
+    reload_shopify
+  end
+  
+  def reload_shopify
     false
   end
   
   def copy_shopify_attributes(collection)
-    @shopify.attributes = collection.shopify.attributes.except('id', 'published_at', 'updated_at')
+    shopify.attributes = collection.shopify.attributes.except('id', 'published_at', 'updated_at')
   end
   
   def method_missing(method, *args)
-    unless @shopify.nil?
-      return @shopify.attributes[method] if @shopify.attributes.include?(method)
+    unless self.shop.nil?
+      return shopify.attributes[method] if shopify.attributes.include?(method)
     end
     super
   end  

@@ -1,12 +1,9 @@
 class Shop < ActiveRecord::Base
   include Rails.application.routes.url_helpers
   
-  after_initialize :load_from_api
   after_create :register_webhooks
-  
-  attr_accessor :shopify
-  delegate :smart_collections, :custom_collections, to: :collections
-  
+  after_create :reload_shopify
+
   def self.create_with_omniauth(auth)
     create! do |shop|
       shop.uid   = auth["uid"]
@@ -22,13 +19,16 @@ class Shop < ActiveRecord::Base
     shop
   end
   
+  def shopify
+    @shopify ||= load_from_api
+  end
+  
   def load_from_api
-    @shopify = self.api do
+    self.api do
       if self.uid.present? && self.token.present?
         ShopifyAPI::Shop.find(:one, from: "/admin/shop.json", uid: self.uid) 
       end
     end
-    @shopify.present?
   end
 
   def api(&block)
@@ -37,6 +37,16 @@ class Shop < ActiveRecord::Base
       output = yield
     end
     return output
+  end
+  
+  def reload_shopify
+    logger.info @shopify
+    self.api do
+      ShopifyAPI::Shop.find(:one, from: "/admin/shop.json", uid: self.uid, reload: true) 
+      ShopifyAPI::SmartCollection.find(:all, uid: self.uid, reload: true)
+      ShopifyAPI::CustomCollection.find(:all, uid: self.uid, reload: true)
+    end
+    logger.info @shopify
   end
   
   def collections
@@ -70,8 +80,8 @@ class Shop < ActiveRecord::Base
   end
   
   def method_missing(method, *args)
-    unless @shopify.nil?
-      return @shopify.attributes[method] if @shopify.attributes.include?(method)
+    unless self.new_record?
+      return shopify.attributes[method] if shopify.attributes.include?(method)
     end
     super
   end
