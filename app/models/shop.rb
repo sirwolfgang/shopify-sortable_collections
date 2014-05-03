@@ -1,14 +1,17 @@
 class Shop < ActiveRecord::Base
-  delegate :smart_collections, :custom_collections, to: :collections
   include Rails.application.routes.url_helpers
   
+  after_initialize :load_from_api
+  after_create :register_webhooks
+  
+  attr_accessor :shopify
+  delegate :smart_collections, :custom_collections, to: :collections
+  
   def self.create_with_omniauth(auth)
-    shop = create! do |shop|
+    create! do |shop|
       shop.uid   = auth["uid"]
       shop.token = auth["credentials"]["token"]
     end
-    shop.register_webhooks
-    shop
   end
 
   def self.find_by_omniauth(auth)
@@ -17,6 +20,15 @@ class Shop < ActiveRecord::Base
     
     shop.update(token: auth["credentials"]["token"]) unless shop.token == auth["credentials"]["token"]
     shop
+  end
+  
+  def load_from_api
+    @shopify = self.api do
+      if self.uid.present? && self.token.present?
+        ShopifyAPI::Shop.find(:one, from: "/admin/shop.json", uid: self.uid) 
+      end
+    end
+    @shopify.present?
   end
 
   def api(&block)
@@ -29,17 +41,18 @@ class Shop < ActiveRecord::Base
   
   def collections
     collections = Array.new
-    
-    ShopifyAPI::SmartCollection.all.each do |shopify_collection|
-      new_collection   = SmartCollection.find_by(shop_id: self.id, id: shopify_collection.id)
-      new_collection ||= SmartCollection.new(shop_id: self.id, id: shopify_collection.id)
-      collections << new_collection
-    end
-    
-    ShopifyAPI::CustomCollection.all.each do |shopify_collection|
-      new_collection   = CustomCollection.find_by(shop_id: self.id, id: shopify_collection.id)
-      new_collection ||= CustomCollection.new(shop_id: self.id, id: shopify_collection.id)
-      collections << new_collection
+    self.api do
+      ShopifyAPI::SmartCollection.find(:all, uid: self.uid).each do |shopify_collection|
+        new_collection   = SmartCollection.find_by(shop_id: self.id, id: shopify_collection.id)
+        new_collection ||= SmartCollection.new(shop_id: self.id, id: shopify_collection.id)
+        collections << new_collection
+      end
+
+      ShopifyAPI::CustomCollection.find(:all, uid: self.uid).each do |shopify_collection|
+        new_collection   = CustomCollection.find_by(shop_id: self.id, id: shopify_collection.id)
+        new_collection ||= CustomCollection.new(shop_id: self.id, id: shopify_collection.id)
+        collections << new_collection
+      end
     end
     
     collections.sort { |x,y| x.title <=> y.title }
@@ -57,10 +70,10 @@ class Shop < ActiveRecord::Base
   end
   
   def method_missing(method, *args)
-    unless self.new_record?
-      shop = self.api { ShopifyAPI::Shop.current }
-      return shop.attributes[method] if shop.attributes.include?(method)
+    unless @shopify.nil?
+      return @shopify.attributes[method] if @shopify.attributes.include?(method)
     end
     super
   end
+  
 end
