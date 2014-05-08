@@ -59,7 +59,7 @@ class WebhooksController < ApplicationController
   
   private
     def set_shop
-      @shop = Shop.find(params[:shop_id])
+      @shop = Shop.find_by_id(params[:shop_id])
     end
     
     def validate_request
@@ -67,3 +67,4 @@ class WebhooksController < ApplicationController
       # TODO:: Check Request Signature
     end
 end
+

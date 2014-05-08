@@ -24,11 +24,11 @@ class Shop < ActiveRecord::Base
   end
   
   def shopify_smart_collections
-    @shopify_smart_collections ||= ShopifyAPI::SmartCollection.find(:all, uid: self.uid)
+    @shopify_smart_collections ||= self.api {ShopifyAPI::SmartCollection.find(:all, uid: self.uid) }
   end
   
   def shopify_custom_collections
-    @shopify_custom_collections ||= ShopifyAPI::CustomCollection.find(:all, uid: self.uid)
+    @shopify_custom_collections ||= self.api {ShopifyAPI::CustomCollection.find(:all, uid: self.uid) }
   end
   
   def reload_shopify
@@ -36,11 +36,11 @@ class Shop < ActiveRecord::Base
   end
   
   def reload_shopify_smart_collections
-    @shopify_smart_collections = ShopifyAPI::SmartCollection.find(:all, uid: self.uid, reload: true)
+    @shopify_smart_collections = self.api {ShopifyAPI::SmartCollection.find(:all, uid: self.uid, reload: true) }
   end
   
   def reload_shopify_custom_collections
-    @shopify_custom_collections = ShopifyAPI::CustomCollection.find(:all, uid: self.uid, reload: true)
+    @shopify_custom_collections = self.api {ShopifyAPI::CustomCollection.find(:all, uid: self.uid, reload: true) }
   end
   
   def api(&block)

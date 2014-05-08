@@ -16,4 +16,5 @@ Workspace::Application.routes.draw do
     resources :smart_collections,  controller: 'collections', type: 'SmartCollection', only: [:create, :update, :destroy]
     resources :custom_collections, controller: 'collections', type: 'CustomCollection', only: [:create, :update, :destroy]
   end
+  
 end

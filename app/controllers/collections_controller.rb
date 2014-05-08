@@ -7,12 +7,15 @@ class CollectionsController < ApplicationController
   # POST /collections.json
   def create
     @collection = @class.new(collection_params)
-
+    
+    MakeCollectionSortable.call(@collection)
+    
     respond_to do |format|
       if @collection.save
         format.html { redirect_to @shop, notice: 'Collection was successfully created.' }
         format.json { head :created }
       else
+        format.html { redirect_to @shop, notice: 'Failed to create collection.' }
         format.json { render json: @collection.errors, status: :unprocessable_entity }
       end
     end
@@ -26,6 +29,7 @@ class CollectionsController < ApplicationController
         format.html { redirect_to @shop, notice: 'Collection was successfully updated.' }
         format.json { head :no_content }
       else
+        format.html { redirect_to @shop, notice: 'Failed to updated collection.' }
         format.json { render json: @collection.errors, status: :unprocessable_entity }
       end
     end

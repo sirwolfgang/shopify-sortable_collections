@@ -21,26 +21,23 @@ class Collection < ActiveRecord::Base
   
   def save_with_api
     ## TODO:: Optimize with Dirty Check, Note: ActiveResource/ActiveModel 4.0.0 does not support Dirty
-    self.shop.api { shopify.save }
-    self.id = shopify.id
-    reload_shopify.present?
+    ## TODO:: Error Logging/Handling
+    saved = self.shop.api { self.shopify.save }
+    self.id = self.shopify.id
+    saved
   end
   
   def copy_shopify_attributes(collection)
-    shopify.attributes = collection.shopify.attributes.except('id', 'published_at', 'updated_at')
+    self.shopify.attributes = collection.shopify.attributes.except('id', 'published_at', 'updated_at')
   end
   
   def method_missing(method, *args)
     unless self.shop.nil? or self.shopify.nil?
-      return shopify.attributes[method] if shopify.attributes.include?(method)
+      return self.shopify.attributes[method] if self.shopify.attributes.include?(method) ## TODO:: Handle assignment operations
     end
     super
   end  
-
-  #  # Manually, By best selling, Alphabetically: A-Z, Alphabetically: Z-A, By price: Highest to lowest, By price: Lowest to highest, By date: Newest to oldest, By date: Oldest to newest
-  #  # Manually is supported as main/default and not as a secondary type
-  #  sort_types = ["best-selling", "alpha-asc", "alpha-desc", "price-desc", "price-asc", "created-desc", "created"] - [self.sort_order]
-
+  
 end
 
 
