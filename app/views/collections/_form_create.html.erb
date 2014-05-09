@@ -1,0 +1,6 @@
+<%= form_for([@shop, collection]) do |f| %>
+  <%= f.hidden_field :shop_id %>
+  <%= f.hidden_field :id %>
+  <%= f.submit "Make Sortable", class: "btn btn-primary" %>
+<% end %>
+    
