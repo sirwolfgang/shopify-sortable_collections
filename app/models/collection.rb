@@ -11,6 +11,18 @@ class Collection < ActiveRecord::Base
   
   before_save :save_with_api
   
+  def sortable?
+    self.children.present? | self.parent.present?
+  end
+  
+  def original?
+    self.present.nil?
+  end
+  
+  def generated?
+    self.parent.present?
+  end
+  
   def shopify
     raise "Type not specified!"
   end

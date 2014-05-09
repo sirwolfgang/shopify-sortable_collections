@@ -12,10 +12,11 @@
 
   <tbody>
     <% @shop.collections.each do |collection| %>
+      <% next if collection.generated? %>
       <tr>
         <td><%= collection.title %></td>
         <td>
-            <%= render 'collections/form_create',  { collection: collection } %>
+          <%= render 'collections/form_create',  { collection: collection } unless collection.sortable? %>
         </td>
       </tr>
     <% end %>
