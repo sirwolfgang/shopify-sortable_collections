@@ -1,68 +1,70 @@
 class WebhooksController < ApplicationController
+  before_action :set_shop
+  before_action :validate_request 
   skip_before_action :verify_authenticity_token
   
   def app_uninstalled
-    head :no_content if params['webhook'].nil?
-    
-    Shop.find_by_uid(params['webhook']['myshopify_domain']).destroy
-    
+    # TODO:: Validate with params
+    @shop.destroy
+
     head :accepted
   end
 
   def shop_update
-    head :no_content if params['webhook'].nil? 
-    
-    shop = Shop.find_by_uid(params['webhook']['myshopify_domain'])
-    shop.api{ ShopifyAPI::Shop.find(:one, :from => "/admin/shop.json", reload: true) }
+    # TODO:: Validate with params
+    @shop.reload_shopify
     
     head :accepted
   end
 
   def products_create
-    head :no_content if params['webhook'].nil? 
-    
     logger.info params['webhook']
     
     head :accepted
   end
 
   def products_update
-    head :no_content if params['webhook'].nil? 
-    
     logger.info params['webhook']
     
     head :accepted
   end
 
   def products_delete
-    head :no_content if params['webhook'].nil? 
-    
     logger.info params['webhook']
     
     head :accepted
   end
 
   def collections_create
-    head :no_content if params['webhook'].nil? 
-    
-    logger.info params['webhook']
+    @shop.reload_shopify_smart_collections
+    @shop.reload_shopify_custom_collections
     
     head :accepted
   end
 
   def collections_update
-    head :no_content if params['webhook'].nil? 
-    
-    logger.info params['webhook']
+    # TODO:: Debug not being triggered
+    @shop.reload_shopify_smart_collections
+    @shop.reload_shopify_custom_collections
     
     head :accepted
   end
 
   def collections_delete
-    head :no_content if params['webhook'].nil? 
-    
-    logger.info params['webhook']
+    @shop.reload_shopify_smart_collections
+    @shop.reload_shopify_custom_collections
     
     head :accepted
   end
+  
+  private
+    def set_shop
+      @shop = Shop.find_by_id(params[:shop_id])
+    end
+    
+    def validate_request
+      return head :no_content if params['webhook'].nil?
+      # TODO:: Check Request Signature
+    end
 end
+

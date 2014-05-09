@@ -1,37 +1,21 @@
 class CollectionsController < ApplicationController
-  before_action :set_collection, only: [:show, :edit, :update, :destroy]
-
-  # GET /collections
-  # GET /collections.json
-  def index
-    @collections = Collection.all
-  end
-
-  # GET /collections/1
-  # GET /collections/1.json
-  def show
-  end
-
-  # GET /collections/new
-  def new
-    @collection = Collection.new
-  end
-
-  # GET /collections/1/edit
-  def edit
-  end
+  before_action :set_shop
+  before_action :set_type
+  before_action :set_collection, only: [:update, :destroy]
 
   # POST /collections
   # POST /collections.json
   def create
-    @collection = Collection.new(collection_params)
-
+    @collection = @class.new(collection_params)
+    
+    MakeCollectionSortable.call(@collection)
+    
     respond_to do |format|
       if @collection.save
-        format.html { redirect_to @collection, notice: 'Collection was successfully created.' }
-        format.json { render action: 'show', status: :created, location: @collection }
+        format.html { redirect_to @shop, notice: 'Collection was successfully created.' }
+        format.json { head :created }
       else
-        format.html { render action: 'new' }
+        format.html { redirect_to @shop, notice: 'Failed to create collection.' }
         format.json { render json: @collection.errors, status: :unprocessable_entity }
       end
     end
@@ -42,10 +26,10 @@ class CollectionsController < ApplicationController
   def update
     respond_to do |format|
       if @collection.update(collection_params)
-        format.html { redirect_to @collection, notice: 'Collection was successfully updated.' }
+        format.html { redirect_to @shop, notice: 'Collection was successfully updated.' }
         format.json { head :no_content }
       else
-        format.html { render action: 'edit' }
+        format.html { redirect_to @shop, notice: 'Failed to updated collection.' }
         format.json { render json: @collection.errors, status: :unprocessable_entity }
       end
     end
@@ -62,13 +46,22 @@ class CollectionsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
+    def set_shop
+      @shop = Shop.find(params[:shop_id])
+    end
+  
+    def set_type
+      @class = Collection
+      @class = params[:type].constantize unless params[:type].empty?
+    end
+  
     def set_collection
-      @collection = Collection.find(params[:id])
+      @collection = @class.find(params[:id])
     end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
     def collection_params
-      params.require(:collection).permit(:shopify_id, :shopify_type)
+      collection_params = params.require(@class.name.underscore).permit(:id, :shop_id)
+      return head :bad_request if collection_params[:shop_id] != params[:shop_id]
+      collection_params
     end
 end

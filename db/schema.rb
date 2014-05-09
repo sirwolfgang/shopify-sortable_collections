@@ -11,19 +11,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140422023138) do
+ActiveRecord::Schema.define(version: 20140427220902) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "collections", force: true do |t|
-    t.integer  "shopify_id"
-    t.string   "shopify_type"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "type"
+    t.integer  "shop_id"
+    t.integer  "parent_id"
   end
-
-  add_index "collections", ["shopify_id"], name: "index_collections_on_shopify_id", unique: true, using: :btree
 
   create_table "shops", force: true do |t|
     t.string   "token"
