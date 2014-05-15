@@ -13,8 +13,8 @@ Workspace::Application.routes.draw do
     post "webhooks/collections_create"
     post "webhooks/collections_update"
     post "webhooks/collections_delete"
-    resources :smart_collections,  controller: 'collections', type: 'SmartCollection', only: [:create, :update, :destroy]
-    resources :custom_collections, controller: 'collections', type: 'CustomCollection', only: [:create, :update, :destroy]
+    resources :smart_collections,  controller: 'collections', type: 'SmartCollection', only: [:create, :destroy]
+    resources :custom_collections, controller: 'collections', type: 'CustomCollection', only: [:create, :destroy]
   end
   
 end

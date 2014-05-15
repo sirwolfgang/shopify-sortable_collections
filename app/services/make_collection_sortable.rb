@@ -22,6 +22,11 @@ class MakeCollectionSortable
         collection.shopify.template_suffix = "sortable"
       end
     end
+    
+    base_collection.shopify.handle          = "#{base_handle}-#{base_collection.sort_order}"
+    base_collection.shopify.template_suffix = "sortable"
+    base_collection.save
+    
   end
   
 end

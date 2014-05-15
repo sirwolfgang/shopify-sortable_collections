@@ -16,7 +16,11 @@
       <tr>
         <td><%= collection.title %></td>
         <td>
-          <%= render 'collections/form_create',  { collection: collection } unless collection.sortable? %>
+          <% if collection.sortable? %>
+            <%= button_to 'Remove', send("shop_" + collection.type.underscore + "_path", @shop, collection), method: :delete, class: 'btn btn-danger' %>
+          <% else %>
+            <%= render 'collections/form_create',  { collection: collection } %>
+          <% end %>
         </td>
       </tr>
     <% end %>
