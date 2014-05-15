@@ -10,6 +10,7 @@ class Collection < ActiveRecord::Base
   validates :shop_id, presence: true
   
   before_save :save_with_api
+  before_destroy :destroy_with_api
   
   def sortable?
     self.children.present? | self.parent.present?
@@ -37,6 +38,11 @@ class Collection < ActiveRecord::Base
     saved = self.shop.api { self.shopify.save }
     self.id = self.shopify.id
     saved
+  end
+  
+  def destroy_with_api
+    return self.shop.api { self.shopify.destroy } if generated?
+    true
   end
   
   def copy_shopify_attributes(collection)

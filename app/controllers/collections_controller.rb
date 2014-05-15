@@ -1,47 +1,29 @@
 class CollectionsController < ApplicationController
   before_action :set_shop
   before_action :set_type
-  before_action :set_collection, only: [:update, :destroy]
-
-  # POST /collections
-  # POST /collections.json
+  
+  # POST /collections/
   def create
     @collection = @class.new(collection_params)
-    
     MakeCollectionSortable.call(@collection)
-    
+        
     respond_to do |format|
       if @collection.save
-        format.html { redirect_to @shop, notice: 'Collection was successfully created.' }
-        format.json { head :created }
+        format.html { redirect_to @shop, notice: 'Collection was successfully made sortable.' }
       else
-        format.html { redirect_to @shop, notice: 'Failed to create collection.' }
-        format.json { render json: @collection.errors, status: :unprocessable_entity }
+        format.html { redirect_to @shop, notice: 'Failed to make collection sortable.' }
       end
     end
   end
-
-  # PATCH/PUT /collections/1
-  # PATCH/PUT /collections/1.json
-  def update
-    respond_to do |format|
-      if @collection.update(collection_params)
-        format.html { redirect_to @shop, notice: 'Collection was successfully updated.' }
-        format.json { head :no_content }
-      else
-        format.html { redirect_to @shop, notice: 'Failed to updated collection.' }
-        format.json { render json: @collection.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /collections/1
-  # DELETE /collections/1.json
+  
+  # DELETE /collection/1
   def destroy
+    @collection = @class.find(params[:id])
+    RemoveSortabilityFromCollection.call(@collection)
     @collection.destroy
+    
     respond_to do |format|
-      format.html { redirect_to collections_url }
-      format.json { head :no_content }
+      format.html { redirect_to @shop, notice: 'Collection is no longer sortable.' }
     end
   end
 
@@ -53,10 +35,6 @@ class CollectionsController < ApplicationController
     def set_type
       @class = Collection
       @class = params[:type].constantize unless params[:type].empty?
-    end
-  
-    def set_collection
-      @collection = @class.find(params[:id])
     end
 
     def collection_params
